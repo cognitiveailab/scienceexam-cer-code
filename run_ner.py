@@ -135,7 +135,7 @@ def readfile_arc(filename):
         label = []
     return data
 
-def readfile_plain_text(data_dir, plain_text):
+def readfile_plain_text(data_dir, plain_text, max_seq_length):
     '''
     read file
     '''
@@ -148,17 +148,30 @@ def readfile_plain_text(data_dir, plain_text):
     for line in f:
         if len(line)==0 or line.startswith('-DOCSTART') or line[0]=="\n":
             if len(sentence) > 0:
-                data.append((sentence,label))
-                sentence = []
-                label = []
+                try:
+                    assert len(sentence) <= max_seq_length
+                except AssertionError:
+                    print('Your sentence length is greater than the current maximum sentence length, please set the --max_seq_length=128(default 64) or much longer')
+                    raise
+                else:
+                    data.append((sentence,label))
+                    sentence = []
+                    label = []
             continue
         splits = line.split(' ')
         sentence.append(splits[0])
         label.append(['O'])
     if len(sentence) >0:
-        data.append((sentence,label))
-        sentence = []
-        label = []
+        try:
+            assert len(sentence) <= max_seq_length
+        except AssertionError:
+            print(
+                'Your sentence length is greater than the current maximum sentence length, please set the --max_seq_length=128(default 64) or much longer')
+            raise
+        else:
+            data.append((sentence,label))
+            sentence = []
+            label = []
     return data
 
 class DataProcessor(object):
@@ -179,7 +192,7 @@ class DataProcessor(object):
     def get_ARC_test_examples(self, data_dir):
         return NotImplementedError()
 
-    def get_plain_text_examples(self, data_dir, plain_text_data):
+    def get_plain_text_examples(self, data_dir, plain_text_data, max_seq_length):
         return NotImplementedError()
 
     def get_labels(self):
@@ -196,9 +209,9 @@ class DataProcessor(object):
         return readfile_arc(input_file)
 
     @classmethod
-    def _read_plain_text(cls, data_dir, plain_text, quotechar=None):
+    def _read_plain_text(cls, data_dir, plain_text, max_seq_length, quotechar=None):
         """Reads a tab separated value file."""
-        return readfile_plain_text(data_dir, plain_text)
+        return readfile_plain_text(data_dir, plain_text, max_seq_length)
 
 
 class NerProcessor(DataProcessor):
@@ -222,8 +235,8 @@ class NerProcessor(DataProcessor):
     def get_ARC_test_examples(self, data_dir):
         return self._create_arc_examples(self._read_arc_tsv(os.path.join(data_dir, "ARC_test_spacy.txt")), "test")
 
-    def get_plain_text_examples(self, data_dir, plain_text_data):
-        return self._create_plain_text_examples(self._read_plain_text(data_dir, plain_text_data), "test")
+    def get_plain_text_examples(self, data_dir, plain_text_data, max_seq_length):
+        return self._create_plain_text_examples(self._read_plain_text(data_dir, plain_text_data, max_seq_length), "test")
 
 
     def get_labels(self):
@@ -667,7 +680,7 @@ def main():
                     else:
                         all_eval_examples.append(eval_examples[int(idx*args.group_length):int((idx+1)*args.group_length)])
             elif args.do_eval_plain_text:
-                eval_examples = processor.get_plain_text_examples(args.data_dir, args.plain_text)
+                eval_examples = processor.get_plain_text_examples(args.data_dir, args.plain_text, args.max_seq_length)
                 eval_examples_length = math.ceil(len(eval_examples) / args.group_length)
                 all_eval_examples = []
                 for idx in range(eval_examples_length):
