@@ -1,0 +1,6 @@
+pytorch-transformers==1.2.0
+torch==1.2.0
+# training progressbar
+tqdm==4.32.1
+# spacy
+spacy==2.2.2
