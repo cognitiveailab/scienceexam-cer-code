@@ -75,7 +75,7 @@ The test set evaluation results (**test_results.txt**) will be output in the dir
 ```bash
 $ python run_ner.py --data_dir=ScienceExamCER_data/conll_data/ --bert_model=bert-base-cased --task_name=ner --output_dir=output_base --max_seq_length=64 --do_eval --do_eval_ARCtest --warmup_proportion=0.1
 ```
-The ARC test output (**ARC_test_prediction.txt, ARC_test_prediction.json**) will be in the **/output_base** folder. 
+The ARC test output (**ARC_test_prediction.conlloutput.txt, ARC_test_prediction.jsonoutput.json**) will be in the **/output_base** folder. 
 
 ---
 ## Tagging your own plain text dataset
