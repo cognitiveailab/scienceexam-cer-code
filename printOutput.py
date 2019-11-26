@@ -23,7 +23,7 @@ def get_sentence_tokens(filepath):
 
 def token_predition_write(ARC_test_dir, y_pred, output_path,settype):
     if settype == 'ARC_test':
-        filename = 'ARC_test_prediction'
+        filename = 'ARC_test'
     else:
         filename = os.path.splitext((settype))[0]
     sentence_tokens_labels = get_sentence_tokens(ARC_test_dir)
