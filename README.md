@@ -78,6 +78,13 @@ $ python run_ner.py --data_dir=ScienceExamCER_data/conll_data/ --bert_model=bert
 The ARC test output (**ARC_test.conlloutput.txt, ARC_test.jsonoutput.json**) will be in the **/output_base** folder. 
 
 ---
+## Tagging your own json text dataset
+```bash
+$ python run_ner.py --bert_model=bert-base-cased --task_name=ner --output_dir=output_base --max_seq_length=64 --do_eval --do_eval_json_text --json_text=myfile.json --warmup_proportion=0.1
+```
+The predicted tags will be output in the **/output_base** folder in two formats, CoNLL and JSON (**myfile.conlloutput.txt** , **myfile.jsonoutput.json**).
+
+---
 ## Tagging your own plain text dataset
 ```bash
 $ python run_ner.py --data_dir=ScienceExamCER_data/conll_data/ --bert_model=bert-base-cased --task_name=ner --output_dir=output_base --max_seq_length=64 --do_eval --do_eval_plain_text --plain_text=myfile.txt --warmup_proportion=0.1
